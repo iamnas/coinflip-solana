@@ -1,70 +1,58 @@
-#![allow(clippy::result_large_err)]
-
 use anchor_lang::prelude::*;
 
+// This is your program's public key and it will update
+// automatically when you build the project.
 declare_id!("AsjZ3kWAUSQRNt2pZVeJkywhZ6gpLpHZmJjduPmKZDZZ");
 
+pub const SEED_PROGRAM_CONFIG: &[u8] = b"flip_config";
+pub const SEED_GAME_IDS: &[u8] = b"flip_gameid";
+
 #[program]
-pub mod solanacoinflip {
+mod solanacoinflip {
     use super::*;
 
-  pub fn close(_ctx: Context<CloseSolanacoinflip>) -> Result<()> {
-    Ok(())
-  }
+    pub fn coin_flip(ctx: Context<InitializeSolanacoinflip>, _game_ids: u128) -> Result<()> {
+        let flip_ctx = &mut ctx.accounts.flip_result;
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.solanacoinflip.count = ctx.accounts.solanacoinflip.count.checked_sub(1).unwrap();
-    Ok(())
-  }
+        ctx.accounts.game_ids.id += 1;
+        flip_ctx.result = 1;
+        Ok(())
+    }
 
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.solanacoinflip.count = ctx.accounts.solanacoinflip.count.checked_add(1).unwrap();
-    Ok(())
-  }
-
-  pub fn initialize(_ctx: Context<InitializeSolanacoinflip>) -> Result<()> {
-    Ok(())
-  }
-
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.solanacoinflip.count = value.clone();
-    Ok(())
-  }
 }
 
 #[derive(Accounts)]
+#[instruction(game_ids:u128)]
 pub struct InitializeSolanacoinflip<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
 
-  #[account(
-  init,
-  space = 8 + Solanacoinflip::INIT_SPACE,
-  payer = payer
-  )]
-  pub solanacoinflip: Account<'info, Solanacoinflip>,
-  pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseSolanacoinflip<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [b"count"],
+        bump,
+    )]
+    pub game_ids: Account<'info, GameIds>,
 
-  #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-  )]
-  pub solanacoinflip: Account<'info, Solanacoinflip>,
-}
-
-#[derive(Accounts)]
-pub struct Update<'info> {
-  #[account(mut)]
-  pub solanacoinflip: Account<'info, Solanacoinflip>,
+    #[account(
+        init,
+        payer=owner,
+        space = 8+ Flip::INIT_SPACE,
+        seeds = [SEED_PROGRAM_CONFIG,owner.key().as_ref(), &game_ids.id.to_le_bytes()],
+        bump
+    )]
+    pub flip_result: Account<'info, Flip>,
+    pub system_program: Program<'info, System>,
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct Solanacoinflip {
-  count: u8,
+pub struct Flip {
+    result: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct GameIds {
+    id: u128,
 }

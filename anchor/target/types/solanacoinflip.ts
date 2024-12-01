@@ -14,150 +14,135 @@ export type Solanacoinflip = {
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "coinFlip",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "solanacoinflip",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "solanacoinflip",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "solanacoinflip",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
+        229,
+        124,
         31,
-        13,
-        152,
-        155,
-        237
+        2,
+        166,
+        139,
+        34,
+        248
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "owner",
           "writable": true,
           "signer": true
         },
         {
-          "name": "solanacoinflip",
+          "name": "gameIds",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "flipResult",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  108,
+                  105,
+                  112,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "arg",
+                "path": "game_ids.id"
+              }
+            ]
+          }
         },
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
-    },
-    {
-      "name": "set",
-      "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
-      ],
-      "accounts": [
-        {
-          "name": "solanacoinflip",
-          "writable": true
-        }
-      ],
       "args": [
         {
-          "name": "value",
-          "type": "u8"
+          "name": "gameIds",
+          "type": "u128"
         }
       ]
     }
   ],
   "accounts": [
     {
-      "name": "solanacoinflip",
+      "name": "flip",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
-        124,
-        25
+        13,
+        33,
+        94,
+        130,
+        154,
+        238,
+        111,
+        35
+      ]
+    },
+    {
+      "name": "gameIds",
+      "discriminator": [
+        11,
+        155,
+        145,
+        132,
+        159,
+        125,
+        93,
+        22
       ]
     }
   ],
   "types": [
     {
-      "name": "solanacoinflip",
+      "name": "flip",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
+            "name": "result",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "gameIds",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u128"
           }
         ]
       }
